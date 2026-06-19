@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 FIFA Dünya Kupası</title>
+<style>
+  :root {
+    --bg:#0a0e1a;--card:#111827;--card2:#1a2235;--border:#1e2d45;
+    --gold:#f5a623;--red:#e94560;--green:#27ae60;--blue:#2980b9;
+    --text:#e8eaf0;--muted:#7a8599;--tur:#162a16;--tur-b:#27ae60;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;font-size:14px;max-width:600px;margin:0 auto}
+  header{background:linear-gradient(135deg,#0a0e1a,#1a1035);padding:14px;text-align:center;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100}
+  header h1{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:1px}
+  header .sub{font-size:10px;color:var(--muted);margin-top:2px}
+  #updateBar{font-size:10px;color:var(--muted);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+  #refreshBtn{background:var(--gold);color:#000;border:none;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer}
+  .tabs{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:99;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;padding:10px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+  .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .tab-content{display:none;padding:10px}
+  .tab-content.active{display:block}
+  .sec-title{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin:10px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--border)}
+  .gc{background:var(--card);border-radius:8px;margin-bottom:10px;overflow:hidden;border:1px solid var(--border)}
+  .gh{background:var(--red);padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:1px}
+  .st{width:100%;border-collapse:collapse;font-size:11px}
+  .st th{background:#0f2a4a;color:var(--muted);font-size:9px;font-weight:600;padding:4px 3px;text-align:center}
+  .st th.l{text-align:left;padding-left:8px}
+  .st td{padding:5px 3px;text-align:center;border-top:1px solid var(--border)}
+  .st td.n{text-align:left;padding-left:6px;font-weight:600;font-size:11px}
+  .st tr.tur td{background:var(--tur)}
+  .st tr.tur td.n{color:var(--tur-b)}
+  .st td.pts{font-weight:700;color:var(--gold)}
+  .st tr.q1{border-left:3px solid var(--green)}
+  .st tr.q2{border-left:3px solid var(--blue)}
+  .st tr.q3{border-left:3px solid var(--gold)}
+  .rb{display:inline-block;width:15px;height:15px;border-radius:2px;font-size:8px;font-weight:700;text-align:center;line-height:15px;margin-right:3px}
+  .r1{background:var(--green);color:#fff}.r2{background:var(--blue);color:#fff}.r3{background:var(--gold);color:#000}.r4{background:#333;color:#888}
+  .ml{padding:2px 0}
+  .mr{display:flex;align-items:center;padding:6px 8px;border-top:1px solid var(--border);gap:4px}
+  .mr.tur{background:var(--tur);border-left:3px solid var(--tur-b)}
+  .mt{flex:1;font-size:11px;font-weight:600}
+  .mt.h{text-align:right}.mt.a{text-align:left}
+  .ms{min-width:44px;text-align:center;font-size:13px;font-weight:700;color:var(--gold);background:#0f2035;padding:3px 5px;border-radius:4px}
+  .ms.u{font-size:10px;color:var(--muted);font-weight:400}
+  .gs{font-size:9px;color:var(--muted);padding:0 8px 4px;display:flex;justify-content:space-between}
+  .gs span{max-width:47%}
+  .tt{width:100%;border-collapse:collapse;font-size:11px}
+  .tt th{background:#0f2a4a;color:var(--muted);font-size:9px;padding:4px;text-align:center}
+  .tt td{padding:5px 4px;text-align:center;border-top:1px solid var(--border)}
+  .tt td.n{text-align:left;font-weight:600}
+  .tt tr.pass{border-left:3px solid var(--green)}
+  .tt tr.fail{border-left:3px solid var(--red);opacity:.6}
+  .bs{margin-bottom:14px}
+  .bt{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;padding:3px 8px;background:var(--card2);border-radius:4px}
+  .bm{background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;overflow:hidden}
+  .bh{display:flex;justify-content:space-between;padding:3px 8px;background:var(--card2);font-size:9px;color:var(--muted)}
+  .bt2{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-top:1px solid var(--border)}
+  .bt2:first-of-type{border-top:none}
+  .bn{font-size:11px;font-weight:600}
+  .bsc{font-size:13px;font-weight:700;color:var(--gold);min-width:20px;text-align:right}
+  .bt2.win .bn{color:var(--green)}.bt2.win .bsc{color:var(--green)}
+  .bm.fin{border-color:var(--gold)}
+  .bm.fin .bh{background:#2a1a00;color:var(--gold)}
+  .live{display:inline-block;background:var(--red);color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;margin-left:3px;animation:pl 1.5s infinite}
+  @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏆 2026 FIFA DÜNYA KUPASI</h1>
+  <div class="sub">ABD · Meksika · Kanada</div>
+  <div id="updateBar">
+    <span id="updateTxt">Kayıtlı veri (19 Haz itibarıyla, 28 maç)</span>
+    <button id="refreshBtn" onclick="refreshData()">🔄 Güncelle</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('groups',this)">Gruplar</div>
+  <div class="tab" onclick="showTab('matches',this)">Maçlar</div>
+  <div class="tab" onclick="showTab('thirds',this)">Üçüncüler</div>
+  <div class="tab" onclick="showTab('bracket',this)">Bracket</div>
+</div>
+
+<div id="tab-groups" class="tab-content active"></div>
+<div id="tab-matches" class="tab-content"></div>
+<div id="tab-thirds" class="tab-content"></div>
+<div id="tab-bracket" class="tab-content"></div>
+
+<script>window.EMBEDDED_DATA={matches:[]};</script>
+<script>
+const TR={"Mexico":"Meksika","South Africa":"G.Afrika","South Korea":"G.Kore",
+"Czech Republic":"Çekya","Canada":"Kanada","Bosnia & Herzegovina":"Bosna Hersek",
+"Qatar":"Katar","Switzerland":"İsviçre","Brazil":"Brezilya","Morocco":"Fas",
+"Haiti":"Haiti","Scotland":"İskoçya","USA":"ABD","Paraguay":"Paraguay",
+"Australia":"Avustralya","Turkey":"TÜRKİYE","Germany":"Almanya",
+"Ivory Coast":"Fildişi S.","Ecuador":"Ekvador","Curaçao":"Curaçao",
+"Netherlands":"Hollanda","Japan":"Japonya","Sweden":"İsveç","Tunisia":"Tunus",
+"Belgium":"Belçika","Egypt":"Mısır","Iran":"İran","New Zealand":"Y.Zelanda",
+"Spain":"İspanya","Cape Verde":"Yeşil Burun","Saudi Arabia":"S.Arabistan",
+"Uruguay":"Uruguay","France":"Fransa","Senegal":"Senegal","Iraq":"Irak",
+"Norway":"Norveç","Argentina":"Arjantin","Algeria":"Cezayir",
+"Austria":"Avusturya","Jordan":"Ürdün","Portugal":"Portekiz",
+"DR Congo":"Kongo DR","Uzbekistan":"Özbekistan","Colombia":"Kolombiya",
+"England":"İngiltere","Croatia":"Hırvatistan","Ghana":"Gana","Panama":"Panama"};
+
+const FL={"Mexico":"🇲🇽","South Africa":"🇿🇦","South Korea":"🇰🇷","Czech Republic":"🇨🇿",
+"Canada":"🇨🇦","Bosnia & Herzegovina":"🇧🇦","Qatar":"🇶🇦","Switzerland":"🇨🇭",
+"Brazil":"🇧🇷","Morocco":"🇲🇦","Haiti":"🇭🇹","Scotland":"🏴","USA":"🇺🇸",
+"Paraguay":"🇵🇾","Australia":"🇦🇺","Turkey":"🇹🇷","Germany":"🇩🇪",
+"Ivory Coast":"🇨🇮","Ecuador":"🇪🇨","Curaçao":"🇨🇼","Netherlands":"🇳🇱",
+"Japan":"🇯🇵","Sweden":"🇸🇪","Tunisia":"🇹🇳","Belgium":"🇧🇪","Egypt":"🇪🇬",
+"Iran":"🇮🇷","New Zealand":"🇳🇿","Spain":"🇪🇸","Cape Verde":"🇨🇻",
+"Saudi Arabia":"🇸🇦","Uruguay":"🇺🇾","France":"🇫🇷","Senegal":"🇸🇳",
+"Iraq":"🇮🇶","Norway":"🇳🇴","Argentina":"🇦🇷","Algeria":"🇩🇿",
+"Austria":"🇦🇹","Jordan":"🇯🇴","Portugal":"🇵🇹","DR Congo":"🇨🇩",
+"Uzbekistan":"🇺🇿","Colombia":"🇨🇴","England":"🏴","Croatia":"🇭🇷",
+"Ghana":"🇬🇭","Panama":"🇵🇦"};
+
+function t(n){ return TR[n] || n; }
+function f(n){ return FL[n] || ""; }
+function isTR(n){ return n === "Turkey" || n === "TÜRKİYE"; }
+
+function fmtDate(s){
+  const d = new Date(s + "T12:00:00");
+  const dn = ["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"];
+  const mn = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+  return d.getDate() + " " + mn[d.getMonth()] + " " + dn[d.getDay()];
+}
+
+function toTSI(timeStr){
+  if (!timeStr) return "";
+  const om = timeStr.match(/UTC([+-]\d+)/);
+  if (!om) return timeStr.replace(/ UTC.*/, "");
+  const off = parseInt(om[1]);
+  const parts = timeStr.replace(/ UTC.*/, "").split(":").map(Number);
+  const h = parts[0], m = parts[1];
+  const tot = h * 60 + m - off * 60 + 180;
+  const th = Math.floor(((tot % 1440) + 1440) % 1440 / 60);
+  const tm = ((tot % 60) + 60) % 60;
+  return String(th).padStart(2, "0") + ":" + String(tm).padStart(2, "0");
+}
+
+function calcStandings(ms){
+  const teams = {};
+  for (const m of ms) {
+    for (const tm of [m.team1, m.team2]) {
+      if (!teams[tm]) teams[tm] = {name: tm, p:0, w:0, d:0, l:0, gf:0, ga:0, pts:0};
+    }
+    if (!m.score) continue;
+    const g1 = m.score.ft[0], g2 = m.score.ft[1];
+    const a = teams[m.team1], b = teams[m.team2];
+    a.p++; b.p++; a.gf += g1; a.ga += g2; b.gf += g2; b.ga += g1;
+    if (g1 > g2) { a.w++; a.pts += 3; b.l++; }
+    else if (g1 < g2) { b.w++; b.pts += 3; a.l++; }
+    else { a.d++; a.pts++; b.d++; b.pts++; }
+  }
+  return teams;
+}
+
+function sortTeams(list){
+  return list.slice().sort(function(a, b){
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    const da = a.gf - a.ga, db = b.gf - b.ga;
+    if (db !== da) return db - da;
+    return b.gf - a.gf;
+  });
+}
+
+let DATA = window.EMBEDDED_DATA;
+
+async function refreshData(){
+  const btn = document.getElementById("refreshBtn");
+  const txt = document.getElementById("updateTxt");
+  btn.disabled = true; btn.textContent = "...";
+  txt.textContent = "Güncelleniyor...";
+
+  const targetUrl = "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json";
+  const proxies = [
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl),
+    "https://corsproxy.io/?" + encodeURIComponent(targetUrl)
+  ];
+
+  for (const proxyUrl of proxies) {
+    try {
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) continue;
+      const parsed = await resp.json();
+      if (parsed.matches && parsed.matches.length > 0) {
+        DATA = parsed;
+        txt.textContent = "Güncellendi: " + new Date().toLocaleTimeString("tr-TR");
+        renderAll();
+        btn.disabled = false; btn.textContent = "Güncelle";
+        return;
+      }
+    } catch (e) { /* try next proxy */ }
+  }
+
+  txt.textContent = "Canlı bağlantı yok — bu sürümdeki kayıtlı veri gösteriliyor (yeni HTML indirip güncelleyin)";
+  btn.disabled = false; btn.textContent = "Güncelle";
+}
+
+function renderGroups(){
+  const gm = {};
+  for (const m of DATA.matches) {
+    if (!m.group) continue;
+    const g = m.group.replace("Group ", "");
+    if (!gm[g]) gm[g] = [];
+    gm[g].push(m);
+  }
+  let html = "";
+  const order = "ABCDEFGHIJKL".split("");
+  for (const g of order) {
+    const ms = gm[g] || [];
+    const allT = Array.from(new Set(ms.flatMap(function(m){ return [m.team1, m.team2]; })));
+    const st = calcStandings(ms);
+    const sorted = sortTeams(allT.map(function(tm){
+      return st[tm] || {name: tm, p:0, w:0, d:0, l:0, gf:0, ga:0, pts:0};
+    }));
+
+    html += '<div class="gc"><div class="gh">GRUP ' + g + '</div>';
+    html += '<table class="st"><tr><th class="l" style="width:38%">Takım</th><th>O</th><th>G</th><th>B</th><th>M</th><th>A</th><th>Y</th><th>AV</th><th class="pts">P</th></tr>';
+
+    sorted.forEach(function(s, i){
+      const tur = isTR(s.name);
+      const gd = s.gf - s.ga;
+      html += '<tr class="q' + (i+1) + (tur ? ' tur' : '') + '">';
+      html += '<td class="n"><span class="rb r' + (i+1) + '">' + (i+1) + '</span>' + f(s.name) + ' ' + t(s.name) + '</td>';
+      html += '<td>' + s.p + '</td><td>' + s.w + '</td><td>' + s.d + '</td><td>' + s.l + '</td>';
+      html += '<td>' + s.gf + '</td><td>' + s.ga + '</td>';
+      html += '<td style="color:' + (gd >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (gd >= 0 ? '+' : '') + gd + '</td>';
+      html += '<td class="pts">' + s.pts + '</td></tr>';
+    });
+
+    html += '</table><div class="ml">';
+
+    for (const m of ms) {
+      const hs = !!m.score;
+      const tur = isTR(m.team1) || isTR(m.team2);
+      const tsi = toTSI(m.time);
+      const sc = hs
+        ? '<div class="ms">' + m.score.ft[0] + ' – ' + m.score.ft[1] + '</div>'
+        : '<div class="ms u">' + tsi + '<br><span style="font-size:8px">' + fmtDate(m.date) + '</span></div>';
+      const g1 = (m.goals1 || []).map(function(gg){
+        return gg.name + (gg.owngoal ? ' (K.K.)' : gg.penalty ? ' (P)' : '') + ' ' + gg.minute + "'";
+      }).join(', ');
+      const g2 = (m.goals2 || []).map(function(gg){
+        return gg.name + (gg.owngoal ? ' (K.K.)' : gg.penalty ? ' (P)' : '') + ' ' + gg.minute + "'";
+      }).join(', ');
+
+      html += '<div class="mr' + (tur ? ' tur' : '') + '">';
+      html += '<div class="mt h">' + f(m.team1) + ' ' + t(m.team1) + '</div>' + sc;
+      html += '<div class="mt a">' + t(m.team2) + ' ' + f(m.team2) + '</div></div>';
+
+      if (hs && (g1 || g2)) {
+        html += '<div class="gs"><span>' + g1 + '</span><span style="text-align:right">' + g2 + '</span></div>';
+      }
+    }
+    html += '</div></div>';
+  }
+  document.getElementById("tab-groups").innerHTML = html;
+}
+
+function matchCards(matches){
+  let html = "", lastD = "";
+  for (const m of matches) {
+    if (m.date !== lastD) {
+      html += '<div style="font-size:10px;color:var(--muted);padding:6px 4px 2px;font-weight:600">' + fmtDate(m.date) + '</div>';
+      lastD = m.date;
+    }
+    const tur = isTR(m.team1) || isTR(m.team2);
+    const hs = !!m.score;
+    const tsi = toTSI(m.time);
+    const lbl = m.group ? m.group.replace("Group", "Grup") : (m.round || "");
+    const sc = hs
+      ? '<div class="ms">' + m.score.ft[0] + ' – ' + m.score.ft[1] + '</div>'
+      : '<div class="ms u">' + tsi + '</div>';
+    const g1 = (m.goals1 || []).map(function(gg){ return '⚽ ' + gg.name + ' ' + gg.minute + "'"; }).join('  ');
+    const g2 = (m.goals2 || []).map(function(gg){ return '⚽ ' + gg.name + ' ' + gg.minute + "'"; }).join('  ');
+    const ground = (m.ground || "").replace(/\s*\(.*\)/, "");
+
+    html += '<div style="background:var(--card);border-radius:6px;margin-bottom:4px;overflow:hidden;border:1px solid ' + (tur ? 'var(--tur-b)' : 'var(--border)') + '">';
+    html += '<div style="display:flex;justify-content:space-between;padding:3px 8px;background:var(--card2);font-size:9px;color:var(--muted)"><span>' + lbl + '</span><span>' + ground + '</span></div>';
+    html += '<div class="mr' + (tur ? ' tur' : '') + '">';
+    html += '<div class="mt h">' + f(m.team1) + ' ' + t(m.team1) + '</div>' + sc;
+    html += '<div class="mt a">' + t(m.team2) + ' ' + f(m.team2) + '</div></div>';
+    if (hs && (g1 || g2)) {
+      html += '<div class="gs"><span>' + g1 + '</span><span style="text-align:right">' + g2 + '</span></div>';
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+function renderMatches(){
+  const today = new Date().toISOString().split("T")[0];
+  const played = DATA.matches.filter(function(m){ return m.score; })
+                  .sort(function(a, b){ return b.date.localeCompare(a.date); });
+  const upcoming = DATA.matches.filter(function(m){ return !m.score && m.date >= today; })
+                    .sort(function(a, b){ return a.date.localeCompare(b.date); });
+  const todayMs = DATA.matches.filter(function(m){ return m.date === today; });
+
+  let html = "";
+  if (todayMs.length) {
+    html += '<div class="sec-title">BUGÜN <span class="live">CANLI</span></div>';
+    html += matchCards(todayMs);
+  }
+  const upFuture = upcoming.filter(function(m){ return m.date !== today; });
+  if (upFuture.length) {
+    html += '<div class="sec-title" style="margin-top:10px">YAKLAŞAN</div>';
+    html += matchCards(upFuture.slice(0, 15));
+  }
+  html += '<div class="sec-title" style="margin-top:10px">SON SONUÇLAR</div>';
+  html += matchCards(played.slice(0, 30));
+  document.getElementById("tab-matches").innerHTML = html;
+}
+
+function renderThirds(){
+  const gm = {};
+  for (const m of DATA.matches) {
+    if (!m.group) continue;
+    const g = m.group.replace("Group ", "");
+    if (!gm[g]) gm[g] = [];
+    gm[g].push(m);
+  }
+  const thirds = [];
+  const order = "ABCDEFGHIJKL".split("");
+  for (const g of order) {
+    const ms = gm[g] || [];
+    const allT = Array.from(new Set(ms.flatMap(function(m){ return [m.team1, m.team2]; })));
+    const st = calcStandings(ms);
+    const sorted = sortTeams(allT.map(function(tm){
+      return st[tm] || {name: tm, p:0, w:0, d:0, l:0, gf:0, ga:0, pts:0};
+    }));
+    if (sorted[2]) {
+      const entry = Object.assign({group: g}, sorted[2]);
+      thirds.push(entry);
+    }
+  }
+  thirds.sort(function(a, b){
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    const da = a.gf - a.ga, db = b.gf - b.ga;
+    if (db !== da) return db - da;
+    return b.gf - a.gf;
+  });
+
+  const played = DATA.matches.filter(function(m){ return m.group && m.score; }).length;
+  const total = DATA.matches.filter(function(m){ return m.group; }).length;
+
+  let html = '<div class="sec-title">12 GRUBUN ÜÇÜNCÜLERİ — EN İYİ 8 GEÇER</div>';
+  if (played < total) {
+    html += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px;padding:6px;background:var(--card);border-radius:5px;border:1px solid var(--border)">';
+    html += 'Grup aşaması devam ediyor (' + played + '/' + total + ' maç). Sıralama değişebilir.</div>';
+  }
+  html += '<table class="tt"><tr><th>#</th><th>Grp</th><th class="n">Takım</th><th>P</th><th>AV</th><th>Gol</th><th>Durum</th></tr>';
+
+  thirds.forEach(function(s, i){
+    const q = i < 8;
+    const gd = s.gf - s.ga;
+    html += '<tr class="' + (q ? 'pass' : 'fail') + '">';
+    html += '<td style="font-weight:700;color:' + (q ? 'var(--green)' : 'var(--muted)') + '">' + (i+1) + '</td>';
+    html += '<td style="font-weight:700">' + s.group + '</td>';
+    html += '<td class="n">' + f(s.name) + ' ' + t(s.name) + '</td>';
+    html += '<td style="font-weight:700;color:var(--gold)">' + s.pts + '</td>';
+    html += '<td style="color:' + (gd >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (gd >= 0 ? '+' : '') + gd + '</td>';
+    html += '<td>' + s.gf + '</td>';
+    html += '<td style="font-size:11px;font-weight:700;color:' + (q ? 'var(--green)' : 'var(--red)') + '">' + (q ? '✅' : '❌') + '</td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  document.getElementById("tab-thirds").innerHTML = html;
+}
+
+// Pathway haritası: hangi maç numarası hangi pathway'e ait (FIFA resmi bracket)
+const PATHWAY_MAP = {
+  // Pathway 1
+  74:1, 77:1, 73:1, 75:1, 83:1, 84:1, 81:1, 82:1,
+  89:1, 90:1, 93:1, 94:1, 97:1, 98:1, 101:1,
+  // Pathway 2
+  76:2, 78:2, 79:2, 80:2, 86:2, 88:2, 85:2, 87:2,
+  91:2, 92:2, 95:2, 96:2, 99:2, 100:2, 102:2,
+};
+
+function bracketCard(m, isFin){
+  const hs = !!m.score;
+  const tur1 = isTR(m.team1), tur2 = isTR(m.team2);
+  const w1 = hs && m.score.ft[0] > m.score.ft[1];
+  const w2 = hs && m.score.ft[1] > m.score.ft[0];
+  const isPlaceholder1 = /^[12][\/]?[A-L]/.test(m.team1) || m.team1.indexOf('/') > -1;
+  const isPlaceholder2 = /^[12][\/]?[A-L]/.test(m.team2) || m.team2.indexOf('/') > -1;
+  const n1 = isPlaceholder1 ? m.team1.replace(/\//g, ',') : (f(m.team1) + ' ' + t(m.team1));
+  const n2 = isPlaceholder2 ? m.team2.replace(/\//g, ',') : (f(m.team2) + ' ' + t(m.team2));
+  const tsi = toTSI(m.time);
+  const ground = (m.ground || "").replace(/\s*\(.*\)/, "");
+
+  let html = '<div class="bm' + (isFin ? ' fin' : '') + '">';
+  html += '<div class="bh"><span>M' + (m.num || '') + ' · ' + fmtDate(m.date) + ' ' + tsi + '</span><span>' + ground + '</span></div>';
+  html += '<div class="bt2' + (w1 ? ' win' : '') + (tur1 ? ' tur' : '') + '">';
+  html += '<div class="bn" style="' + (isPlaceholder1 ? 'color:var(--muted);font-size:10px' : '') + (tur1 ? ';color:var(--tur-b)' : '') + '">' + n1 + '</div>';
+  html += '<div class="bsc">' + (hs ? m.score.ft[0] : '') + '</div></div>';
+  html += '<div class="bt2' + (w2 ? ' win' : '') + (tur2 ? ' tur' : '') + '">';
+  html += '<div class="bn" style="' + (isPlaceholder2 ? 'color:var(--muted);font-size:10px' : '') + (tur2 ? ';color:var(--tur-b)' : '') + '">' + n2 + '</div>';
+  html += '<div class="bsc">' + (hs ? m.score.ft[1] : '') + '</div></div></div>';
+  return html;
+}
+
+function renderBracket(){
+  const elim = DATA.matches.filter(function(m){ return !m.group; });
+  const byR = {};
+  for (const m of elim) {
+    const r = m.round || "?";
+    if (!byR[r]) byR[r] = [];
+    byR[r].push(m);
+  }
+
+  const pathwayRounds = ["Round of 32", "Round of 16", "Quarter-finals", "Semi-finals"];
+  const trR = {
+    "Round of 32": "Son 32", "Round of 16": "Son 16",
+    "Quarter-finals": "Çeyrek Final", "Semi-finals": "Yarı Final"
+  };
+
+  let html = '';
+
+  for (const pwNum of [1, 2]) {
+    const pwColor = pwNum === 1 ? 'var(--blue)' : 'var(--green)';
+    html += '<div style="background:' + pwColor + ';color:#fff;font-size:11px;font-weight:700;' +
+            'letter-spacing:2px;text-align:center;padding:6px;border-radius:6px;margin:14px 0 8px">' +
+            'PATHWAY ' + pwNum + '</div>';
+
+    for (const r of pathwayRounds) {
+      const ms = (byR[r] || []).filter(function(m){
+        return PATHWAY_MAP[m.num] === pwNum;
+      }).sort(function(a, b){ return (a.num || 0) - (b.num || 0); });
+      if (!ms.length) continue;
+
+      html += '<div class="bs"><div class="bt" style="border-left:3px solid ' + pwColor + '">' + trR[r] + '</div>';
+      for (const m of ms) html += bracketCard(m, false);
+      html += '</div>';
+    }
+  }
+
+  html += '<div style="background:var(--gold);color:#000;font-size:11px;font-weight:700;' +
+          'letter-spacing:2px;text-align:center;padding:6px;border-radius:6px;margin:16px 0 8px">' +
+          '🏆 SONUÇ MAÇLARI</div>';
+
+  const finalRounds = ["Third place", "Final"];
+  const finR = {"Third place": "🥉 Üçüncülük Maçı", "Final": "🏆 FİNAL"};
+  for (const r of finalRounds) {
+    const ms = byR[r];
+    if (!ms) continue;
+    const isFin = r === "Final";
+    html += '<div class="bs"><div class="bt">' + finR[r] + '</div>';
+    for (const m of ms) html += bracketCard(m, isFin);
+    html += '</div>';
+  }
+
+  if (!html) html = '<div style="color:var(--muted);text-align:center;padding:24px;font-size:12px">Eleme turları henüz başlamadı.</div>';
+  document.getElementById("tab-bracket").innerHTML = html;
+}
+
+function renderAll(){
+  renderGroups();
+  renderMatches();
+  renderThirds();
+  renderBracket();
+}
+
+function showTab(name, el){
+  document.querySelectorAll(".tab-content").forEach(function(e){ e.classList.remove("active"); });
+  document.querySelectorAll(".tab").forEach(function(e){ e.classList.remove("active"); });
+  document.getElementById("tab-" + name).classList.add("active");
+  el.classList.add("active");
+}
+
+renderAll();
+document.getElementById("updateTxt").textContent = "Kayıtlı veri (sayfa açılışta yüklendi)";
+setInterval(refreshData, 10 * 60 * 1000);
+
+</script>
+
+<script>
+async function loadLocalData(){
+  try{
+    const r = await fetch('./data.json?ts=' + Date.now());
+    if(r.ok){
+      DATA = await r.json();
+      renderAll();
+      const el=document.getElementById('updateTxt');
+      if(el) el.textContent='data.json yüklendi';
+    }
+  }catch(e){
+    console.error(e);
+  }
+}
+window.addEventListener('load', loadLocalData);
+</script>
+</body>
+</html>
