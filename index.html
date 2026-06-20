@@ -417,10 +417,10 @@ function renderBracket(){
     byR[r].push(m);
   }
 
-  const pathwayRounds = ["Round of 32", "Round of 16", "Quarter-finals", "Semi-finals"];
+  const pathwayRounds = ["Round of 32", "Round of 16", "Quarter-final", "Semi-final"];
   const trR = {
     "Round of 32": "Son 32", "Round of 16": "Son 16",
-    "Quarter-finals": "Çeyrek Final", "Semi-finals": "Yarı Final"
+    "Quarter-final": "Çeyrek Final", "Semi-final": "Yarı Final"
   };
 
   let html = '';
@@ -447,8 +447,8 @@ function renderBracket(){
           'letter-spacing:2px;text-align:center;padding:6px;border-radius:6px;margin:16px 0 8px">' +
           '🏆 SONUÇ MAÇLARI</div>';
 
-  const finalRounds = ["Third place", "Final"];
-  const finR = {"Third place": "🥉 Üçüncülük Maçı", "Final": "🏆 FİNAL"};
+  const finalRounds = ["Match for third place", "Third place", "Final"];
+  const finR = {"Match for third place":"🥉 Üçüncülük Maçı","Third place":"🥉 Üçüncülük Maçı","Final":"🏆 FİNAL"};
   for (const r of finalRounds) {
     const ms = byR[r];
     if (!ms) continue;
